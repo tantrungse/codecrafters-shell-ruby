@@ -1,8 +1,21 @@
-command_list = ['exit']
-command = ''
+cmd_list = {
+  exit_cmd: 'exit',
+  echo_cmd: 'echo'
+}
+cmd = ''
 
-while command != command_list[0]
+while cmd != cmd_list[0]
   $stdout.write("$ ")
-  command, *args = gets.chomp.split(" ")
-  $stdout.write("#{command}: command not found\n") unless command == command_list[0]
+  cmd, *args = gets.chomp.split(" ")
+
+  
+
+  case cmd
+  when cmd_list[:exit_cmd]
+    break
+  when cmd_list[:echo_cmd]
+    $stdout.write("#{args.join(' ')}\n")
+  else
+    $stdout.write("#{cmd}: command not found\n")
+  end
 end
