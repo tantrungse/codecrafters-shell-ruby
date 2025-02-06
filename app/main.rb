@@ -1,7 +1,8 @@
 COMMANDS = {
   exit: 'exit',
   echo: 'echo',
-  type: 'type'
+  type: 'type',
+  pwd: 'pwd'
 }.freeze
 
 def find_executable(cmd)
@@ -30,6 +31,8 @@ loop do
         $stdout.write("#{target}: not found\n")
       end
     end
+  when COMMANDS[:pwd]
+    $stdout.write("#{Dir.pwd}\n")
   else
     find_executable(cmd) ? system(cmd, target) : $stdout.write("#{cmd}: command not found\n")
   end
