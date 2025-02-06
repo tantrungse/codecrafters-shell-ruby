@@ -2,7 +2,8 @@ COMMANDS = {
   exit: 'exit',
   echo: 'echo',
   type: 'type',
-  pwd: 'pwd'
+  pwd: 'pwd',
+  cd: 'cd'
 }.freeze
 
 def find_executable(cmd)
@@ -33,6 +34,13 @@ loop do
     end
   when COMMANDS[:pwd]
     $stdout.write("#{Dir.pwd}\n")
+  when COMMANDS[:cd]
+    begin
+      Dir.chdir(target)
+    rescue Errno::ENOENT
+      $stdout.write("#{cmd}: #{target}: No such file or directory\n")
+    end
+    
   else
     find_executable(cmd) ? system(cmd, target) : $stdout.write("#{cmd}: command not found\n")
   end
