@@ -1,26 +1,34 @@
-cmd_list = {
-  exit_cmd: 'exit',
-  echo_cmd: 'echo',
-  type_cmd: 'type'
-}
-cmd = ''
+COMMANDS = {
+  exit: 'exit',
+  echo: 'echo',
+  type: 'type'
+}.freeze
 
-while cmd != cmd_list[0]
+def find_executable(cmd)
+  path_directories = ENV['PATH'].split(':')
+  path_directories.find { |dir| File.executable?(File.join(dir, cmd)) }
+end
+
+loop do
   $stdout.write("$ ")
   cmd, *args = gets.chomp.split(" ")
 
-  
-
   case cmd
-  when cmd_list[:exit_cmd]
+  when COMMANDS[:exit]
     break
-  when cmd_list[:echo_cmd]
+  when COMMANDS[:echo]
     $stdout.write("#{args.join(' ')}\n")
-  when cmd_list[:type_cmd]
-    if cmd_list.has_value?(args[0])
-      $stdout.write("#{args[0]} is a shell builtin\n")
+  when COMMANDS[:type]
+    target = args.shift
+    if COMMANDS.has_value?(target)
+      $stdout.write("#{target} is a shell builtin\n")
     else
-      $stdout.write("#{args[0]}: not found\n")
+      exec_path = find_executable(target)
+      if exec_path
+        $stdout.write("#{target} is #{File.join(exec_path, target)}\n")
+      else
+        $stdout.write("#{target}: not found\n")
+      end
     end
   else
     $stdout.write("#{cmd}: command not found\n")
