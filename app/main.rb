@@ -12,6 +12,7 @@ end
 loop do
   $stdout.write("$ ")
   cmd, *args = gets.chomp.split(" ")
+  target = args.first
 
   case cmd
   when COMMANDS[:exit]
@@ -19,7 +20,6 @@ loop do
   when COMMANDS[:echo]
     $stdout.write("#{args.join(' ')}\n")
   when COMMANDS[:type]
-    target = args.shift
     if COMMANDS.has_value?(target)
       $stdout.write("#{target} is a shell builtin\n")
     else
@@ -31,6 +31,6 @@ loop do
       end
     end
   else
-    $stdout.write("#{cmd}: command not found\n")
+    find_executable(cmd) ? system(cmd, target) : $stdout.write("#{cmd}: command not found\n")
   end
 end
