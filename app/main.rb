@@ -36,7 +36,7 @@ loop do
     $stdout.write("#{Dir.pwd}\n")
   when COMMANDS[:cd]
     begin
-      Dir.chdir(target)
+      target == '~' ? Dir.chdir(Dir.home) : Dir.chdir(target)
     rescue Errno::ENOENT
       $stdout.write("#{cmd}: #{target}: No such file or directory\n")
     end
