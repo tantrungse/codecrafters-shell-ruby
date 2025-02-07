@@ -20,11 +20,8 @@ loop do
   when COMMANDS[:exit]
     break
   when COMMANDS[:echo]
-    if args_str&.scan(/'/)&.any?
-      $stdout.write("#{args_str.split("'").join}\n")
-    else
-      $stdout.write("#{args.join(" ")}\n")
-    end
+    args_str&.scan(/'/)&.any? ? $stdout.write("#{args_str.split("'").join}\n")
+                              : $stdout.write("#{args.join(" ")}\n")
   when COMMANDS[:type]
     if COMMANDS.has_value?(args_str)
       $stdout.write("#{args_str} is a shell builtin\n")
