@@ -13,35 +13,39 @@ end
 
 loop do
   $stdout.write("$ ")
-  cmd, *args = gets.chomp.split(" ")
-  target = args.first
+  cmd, args_str = gets.chomp.split(" ", 2)
+  args = args_str&.scan(/'/)&.any? ? args_str&.scan(/'([^']*)'/).flatten : args_str&.split(" ")
 
   case cmd
   when COMMANDS[:exit]
     break
   when COMMANDS[:echo]
-    $stdout.write("#{args.join(' ')}\n")
-  when COMMANDS[:type]
-    if COMMANDS.has_value?(target)
-      $stdout.write("#{target} is a shell builtin\n")
+    if args_str&.scan(/'/)&.any?
+      $stdout.write("#{args_str.split("'").join}\n")
     else
-      exec_path = find_executable(target)
+      $stdout.write("#{args.join(" ")}\n")
+    end
+  when COMMANDS[:type]
+    if COMMANDS.has_value?(args_str)
+      $stdout.write("#{args_str} is a shell builtin\n")
+    else
+      exec_path = find_executable(args_str)
       if exec_path
-        $stdout.write("#{target} is #{File.join(exec_path, target)}\n")
+        $stdout.write("#{args_str} is #{File.join(exec_path, args_str)}\n")
       else
-        $stdout.write("#{target}: not found\n")
+        $stdout.write("#{args_str}: not found\n")
       end
     end
   when COMMANDS[:pwd]
     $stdout.write("#{Dir.pwd}\n")
   when COMMANDS[:cd]
     begin
-      target == '~' ? Dir.chdir(Dir.home) : Dir.chdir(target)
+      args_str == '~' ? Dir.chdir(Dir.home) : Dir.chdir(args_str)
     rescue Errno::ENOENT
-      $stdout.write("#{cmd}: #{target}: No such file or directory\n")
+      $stdout.write("#{cmd}: #{args_str}: No such file or directory\n")
     end
     
   else
-    find_executable(cmd) ? system(cmd, target) : $stdout.write("#{cmd}: command not found\n")
+    find_executable(cmd) ? system(cmd, *args) : $stdout.write("#{cmd}: command not found\n")
   end
 end
